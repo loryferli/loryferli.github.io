@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ridesharing su una rete a basso flusso – Lorenzo Ferlito</title>
+  <meta name="description"
+    content="Un servizio di ridesharing può sopravvivere su una rete con flussi molto bassi? Una simulazione multi-agente su un corridoio rurale gallese, quanto costa farla funzionare, e due studi precedenti rieseguiti sul loro terreno.">
+  <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+
+<body>
+
+  <a class="lang-inline" href="../../mas/" hreflang="en">English</a>
+
+  <a class="back" href="../">← Lorenzo Ferlito</a>
+
+  <h1>Un servizio di ridesharing può sopravvivere su una rete quasi senza traffico?</h1>
+
+  <p class="lede">Sì, e la parte interessante è quanto costa. Su un corridoio rurale del Galles
+    centrale, tredici autisti iscritti servono l'85% di trentadue passeggeri a
+    <strong>6,8 chilometri-veicolo per passeggero trasportato</strong>. Portare la flotta a
+    trentadue veicoli guadagna altri dieci punti di tasso di servizio e costa
+    <strong>13,9 km per passeggero</strong>. Portarla a centotrentadue non aggiunge nulla e costa
+    <strong>58,7 km per passeggero</strong>. Un servizio di ridesharing a basso flusso è economico
+    finché è a corto di veicoli e rovinoso nel momento in cui ne ha abbastanza.
+  </p>
+
+  <p>Questa è la risposta data da 930 run simulate su otto esperimenti sul corridoio versionati nel
+    repository, ognuno riproducibile offline e senza chiave API. Lo stesso motore ha poi rieseguito i
+    due studi da cui questo lavoro è nato, sul loro terreno intorno a Lione, e uno dei loro risultati
+    non ha retto. Quello che segue è l'argomentazione.</p>
+
+  <h2>Il corridoio</h2>
+
+  <p>Ceredigion settentrionale verso Aberystwyth: cinque aree censuarie, 44.485 residenti, una città
+    che assorbe il lavoro e sette stazioni distribuite su 23 km di A487 e A44. Tra le cinque aree
+    corrono 11.772 spostamenti casa-lavoro; la coppia più grande vale 1.235 persone al giorno, e il
+    62% guida da solo. È il caso a basso flusso: abbastanza rarefatto perché condividere un passaggio
+    sia un vero problema di coordinamento e non una coda.</p>
+
+  <p>La domanda viene dal dataset degli spostamenti casa-lavoro del censimento 2011, la più recente
+    rilevazione area-area a licenza aperta che riporti una <em>scomposizione per modo</em>: distingue
+    chi guida un'auto da chi la occupa come passeggero, quindi il corridoio porta con sé una quota di
+    passeggeri auto osservata del 9,95% degli spostamenti in auto. È l'unico numero esterno
+    disponibile per chiedersi se un'occupazione simulata sia plausibile, e non un obiettivo su cui
+    calibrare, il che renderebbe tutto circolare. Le stazioni vengono da OpenStreetMap, selezionate
+    per regola e non a mano. Due numeri del corridoio sono inventati ed entrambi sono
+    dichiarati apertamente: uno scenario campiona un ventesimo del flusso osservato e iscrive un
+    automobilista su dieci.</p>
+
+  <h2>Come vanno letti questi confronti</h2>
+
+  <p>Ogni esperimento esegue gli <em>stessi</em> dieci semi su ogni punto del suo asse, quindi due
+    configurazioni non vengono mai confrontate come due medie con bande sovrapposte: la differenza
+    viene calcolata <strong>seme per seme</strong> e riportata come media, deviazione standard e
+    conteggio di quanti semi si sono mossi in ciascun verso. Non è un test di significatività e non viene
+    presentato come tale.</p>
+
+  <p><strong>Due conclusioni di questo progetto hanno cambiato segno sotto questa lente</strong>, ed
+    erano già state scritte come risultati: un incrocio fra due regole di dispatch che si è rivelato
+    rumore, e una cifra sulla soglia di cammino rimasta indietro di diverse revisioni.</p>
+
+  <h2>Due autisti l'ora per stazione è quello che il corridoio chiede</h2>
+
+  <figure>
+    <img src="../../mas/images/adoption-service_rate.svg"
+      alt="Tasso di servizio rispetto agli autisti l'ora per stazione, da uno a sedici. Salta da 0,55 a 0,84 tra uno e due, poi si appiattisce intorno a 0,9-0,95.">
+    <figcaption>Tasso di servizio rispetto alla densità dell'offerta, autisti l'ora per stazione, con
+      trentadue passeggeri fissi. Media su dieci semi, con l'intervallo tra semi come banda.
+    </figcaption>
+  </figure>
+
+  <p>La dimensione di una flotta è un fatto di un singolo scenario; l'unità che si trasporta altrove
+    è la densità dell'offerta. Ogni autista del corridoio parte nella stessa ora e sei delle sue sette
+    stazioni sono origini di linea, quindi l'offerta di una run si misura in <strong>autisti l'ora per
+      stazione</strong>. Facendola variare per potenze di due da uno a sedici, il gomito è a due ed è
+    l'unico passo indiscutibile: da uno a due il tasso di servizio sale di 0,291, in tutti e dieci i
+    semi. Da due a quattro aggiunge 0,066, da quattro a otto 0,047, e da otto a sedici niente di
+    distinguibile.</p>
+
+  <p>Il costo sale a ogni passo e non si ferma mai: 4,9, 6,3, 11,7, 21,9 e 45,5 km per passeggero
+    servito, quindi sedici autisti l'ora per stazione spendono <strong>nove volte</strong> la distanza
+    per passeggero di uno, e non trasportano più persone di otto. Quello che resta non servito in cima
+    all'asse non è nemmeno un problema di offerta: ogni passeggero non servito lì è finito senza
+    nessuna linea dentro il proprio limite di cammino, che è il tetto di due sezioni più sotto visto da
+    un'altra direzione. La risposta è quindi <strong>due autisti l'ora per stazione per avere un
+      servizio, quattro per averne uno buono, e niente sopra quattro vale la sua distanza.</strong></p>
+
+  <p class="figures">Un'avvertenza per ogni sweep di questa pagina che muove un numero di autisti:
+    tutte le estrazioni avvengono all'inizio, gruppo per gruppo, quindi cambiare il numero di autisti
+    cambia dove compaiono i passeggeri. Un asse di offerta appaia quindi run e non domanda. I passi su
+    cui poggia questa sezione sono molto più grandi di quel rumore.</p>
+
+  <h2>I posti valgono più dei veicoli, di un fattore cinque</h2>
+
+  <figure>
+    <img src="../../mas/images/results-service_rate.svg"
+      alt="Tasso di servizio rispetto alla dimensione della flotta, con veicoli da due e da cinque posti. Cinque posti arrivano a 0,85 con tredici veicoli; due posti ne richiedono sessantasei.">
+    <figcaption>Tasso di servizio rispetto alla dimensione della flotta, per capacità del veicolo.
+      Media su dieci semi, con l'intervallo tra semi come banda.</figcaption>
+  </figure>
+
+  <p>Con sei veicoli, due posti servono il 16% dei passeggeri e cinque posti il 55%. Sugli
+    <strong>stessi identici 83,9 chilometri</strong>, perché quegli autisti stavano facendo quei
+    viaggi comunque e i posti in più non costano distanza. La stessa quota di servizio si può
+    raggiungere aggiungendo veicoli invece che posti, ma il conto cambia: dove cinque posti bastano
+    con tredici veicoli, due posti ne richiedono sessantasei, e sessantasei veicoli percorrono 891 km
+    contro 183. Cinque volte la distanza per lo stesso servizio.
+  </p>
+
+  <p>È un'affermazione su un corridoio con domanda rarefatta e sparsa. Un veicolo che passa da una
+    stazione è comune; due passeggeri che vogliono la stessa stazione nello stesso momento no.</p>
+
+  <h2>Il tetto è la distanza a piedi, non l'abbinamento</h2>
+
+  <figure>
+    <img src="../../mas/images/walking-service_rate.svg"
+      alt="Tasso di servizio rispetto alla flotta a cinque soglie di cammino. A 1200 secondi la curva è piatta: più veicoli non aiutano.">
+    <figcaption>Tasso di servizio rispetto alla flotta, per quanto un passeggero è disposto a
+      camminare (le due tratte a piedi contano insieme). Dieci semi per punto.</figcaption>
+  </figure>
+
+  <p>Il vincolo che lega questo servizio non è il dispatcher e non è la flotta: è quanto lontano una
+    persona è disposta a camminare fino a una stazione. <strong>A venti minuti di cammino totale,
+      aggiungere veicoli smette di funzionare</strong>: il servizio va 0,278 → 0,381 → 0,375 al
+    crescere di una flotta che più che quintuplica, quindi trentadue veicoli servono le stesse persone
+    di tredici e costano 37,9 km per passeggero contro 16,9. Un passeggero senza nessuna linea entro
+    la propria soglia di cammino non si registra mai, quindi nessun aumento dell'offerta lo
+    raggiunge.</p>
+
+  <p>Gli scenari versionati assumono un massimo di quaranta minuti di camminata sulle due tratte:
+    rispetto ai trenta minuti di default del motore valgono undici punti di tasso di servizio in più,
+    in tutti e dieci i semi. Le stazioni stanno fino a due chilometri da dove la popolazione vive
+    davvero, perché è lì che stanno nel Galles rurale.</p>
+
+  <h2>L'attesa in stazione è ciò di cui è fatto il servizio</h2>
+
+  <figure>
+    <img src="../../mas/images/approach-service_rate.svg"
+      alt="Tasso di servizio rispetto alla flotta per autisti che aspettano alla propria stazione e autisti che si fermano solo su richiesta. Fermarsi su richiesta è molto più basso a ogni dimensione della flotta.">
+    <figcaption>Tasso di servizio rispetto alla flotta, per un autista registrato che va alla sua
+      stazione e aspetta lì, e per uno che si ferma solo se c'è già qualcuno in attesa davanti a sé.
+      Dieci semi per punto.</figcaption>
+  </figure>
+
+  <p>Ogni altra cifra di questa pagina fa andare un autista registrato alla stazione della sua linea
+    e aspettare lì, fino al limite della sua pazienza, che arrivino passeggeri. L'altra lettura di
+    "registrato" è un autista che fa il proprio percorso e si ferma solo se qualcuno è già in attesa a
+    una stazione davanti a sé, come si comporterebbe chi guarda l'app solo quando ci sta passando
+    davanti.</p>
+
+  <p><strong>Fermarsi su richiesta perde tra un quarto e tre quinti del servizio a ogni dimensione
+      della flotta, in ogni seme</strong>: con tredici autisti, 0,853 diventa 0,256. La distanza la
+    risparmia, perché non ci sono deviazioni verso stazioni vuote né attese, ma la distanza
+    risparmiata era quella che trasportava persone: la quota a vuoto sale da 0,481 a 0,805, e i
+    passeggeri che trasporta ancora aspettano 680 s invece di 205. Su un corridoio a basso flusso che
+    un passeggero e un autista passino dalla stessa fermata nello stesso minuto è l'eccezione, e
+    l'attesa è ciò che trasforma un incontro mancato in un passaggio. Quello che si chiede a un autista
+    registrato di fare in stazione conta più di qualunque cosa decida il dispatcher, e ogni altra
+    cifra qui è letta sotto la risposta generosa.</p>
+
+  <h2>La direzione batte la densità</h2>
+
+  <figure>
+    <img src="../../mas/images/networks-service_rate.svg"
+      alt="Tasso di servizio rispetto alla flotta per cinque costruzioni di rete. Flow-directed sta in cima, free-form e flow-ranked si sovrappongono, Delaunay e l'albero minimo perdono 0,2 di servizio.">
+    <figcaption>Cinque modi di derivare un insieme di linee dalle stesse sette stazioni. Dieci semi
+      per punto.</figcaption>
+  </figure>
+
+  <p>Cinque costruzioni derivano le linee dalle stazioni del corridoio: free-form collega tutte le
+    21 coppie, Delaunay 14, flow-ranked 13 (ordinate per volume di pendolarismo) e l'albero
+    ricoprente minimo 6. La quinta, flow-directed, prende le 13 coppie di flow-ranked e percorre
+    ciascuna solo nel verso in cui corre il pendolarismo tra le sue due aree. L'ipotesi era che
+    strutturare la rete pagasse. Il risultato è inaspettato.</p>
+
+  <p><strong>Dimezzare la rete è gratis.</strong> Le 13 coppie di flow-ranked contro le 21 di
+    free-form differiscono per meno di 0,01 di servizio a ogni dimensione della flotta, e la
+    maggioranza dei semi dà risultati identici. <strong>Ridurla a un quarto no.</strong> Delaunay e
+    l'albero perdono da 0,18 a 0,24 di servizio a ogni dimensione della flotta sopra i sei veicoli, in
+    tutti e dieci i semi. L'albero percorre meno chilometri, ma solo perché serve meno persone.</p>
+
+  <p><strong>E ogni costruzione simmetrica perde contro sei linee disegnate a mano.</strong> La rete
+    dichiarata a mano del corridoio è fatta di sei linee <em>a senso unico</em>, tutte verso
+    Aberystwyth. Confrontata seme per seme batte free-form di 0,106 con sei veicoli e di 0,109 con
+    tredici, in tutti e dieci i semi, e smette di vincere solo quando i veicoli sono così tanti che il
+    ranking trova comunque tutti. Sei linee orientate battono quarantadue linee orientate.</p>
+
+  <p>Il meccanismo è la direzione: ogni costruzione simmetrica collega quello che collega in entrambi
+    i versi, e su un pendolarismo radiale del mattino metà delle sue linee corre <em>via</em> dal
+    lavoro, dove il dispatcher a volte manda un autista. <strong>Orientare una costruzione secondo la
+      domanda ne recupera circa metà, e non costa nulla.</strong> Flow-directed contro flow-ranked
+    muove una sola variabile, tredici linee invece di ventisei sulle stesse coppie, e con tredici
+    veicoli porta il servizio da 0,750 a 0,797. Nessun seme, a nessuna dimensione della flotta, va nel
+    verso opposto, e la differenza di distanza è sotto i due chilometri. Questo chiude il 46% del
+    divario con la rete disegnata a mano.</p>
+
+  <p>Perché solo metà: le tredici linee di flow-directed sono le sei dichiarate a mano <em>più altre
+      sette</em> tra aree periferiche, perché i flussi successivi del dataset sono reali (533 persone al
+    giorno da un'area periferica a un'altra). Sono domanda onesta e comunque le linee sbagliate per
+    questo servizio, e il dispatcher a volte ne assegna una a un autista diretto in città. La
+    direzione è necessaria e non sufficiente: strutturare la rete qui non paga, derivarla dalla
+    geometria danneggia, leggere quanto è grande un flusso non compra nulla, e leggere <em>in che
+      verso corre</em> compra metà di quello che ottiene una persona disegnando sei linee a mano.</p>
+
+  <h2>Inseguire la domanda non paga</h2>
+
+  <figure>
+    <img src="../../mas/images/policies-empty_distance_share.svg"
+      alt="Quota di distanza a vuoto rispetto alla flotta per tre regole di dispatch. La regola che insegue la domanda è peggiore della regola del ranking a ogni dimensione della flotta.">
+    <figcaption>Quota di chilometri percorsi senza nessuno a bordo, per regola di dispatch. Dieci
+      semi per punto.</figcaption>
+  </figure>
+
+  <p>La seconda regola di dispatch abbandona il criterio condiviso e manda ogni autista sulla linea
+    dove ci sono già passeggeri in attesa. Confrontata seme per seme, <strong>non vince mai in modo
+      misurabile sul servizio e perde sul costo dappertutto</strong>: la sua quota di distanza a
+    vuoto è peggiore a ogni dimensione della flotta, e con trentadue veicoli percorre 234 chilometri
+    in più, il 55%, per un servizio leggermente <em>inferiore</em>. Un autista che devia verso
+    qualcuno in attesa a una stazione è un autista che allunga, e su linee di 23 km è il termine
+    dominante.</p>
+
+  <p>Vale la pena essere precisi su una correzione, perché è il tipo di cosa che diventa senso comune
+    senza che nessuno se ne accorga. Guardando le medie, le due regole <em>sembrano</em> incrociarsi:
+    quella che insegue la domanda è avanti con flotte piccole e indietro con flotte grandi, e questo
+    era stato letto come la firma di due euristiche che vedono ciascuna quello che manca all'altra. Ma
+    il vantaggio con flotte piccole non regge il confronto seme per seme: i semi non sono d'accordo su
+    quale delle due regole sia avanti, quindi quel vantaggio è rumore e sopravvive solo la differenza
+    di costo. A nessuna delle due regole manca un meccanismo che ha l'altra: a entrambe manca valutare
+    direttamente le coppie autista-passeggero invece di indicizzare l'abbinamento su una linea, che è
+    la sezione seguente.</p>
+
+  <h2>Valutare le coppie paga solo dove i veicoli scarseggiano</h2>
+
+  <figure>
+    <img src="../../mas/images/policies-service_rate.svg"
+      alt="Tasso di servizio rispetto alla flotta per tre regole di dispatch. La valutazione delle coppie è avanti a entrambe le regole fisse con sei e tredici veicoli, e dietro alla regola del ranking da sessantasei in su.">
+    <figcaption>Tasso di servizio rispetto alla dimensione della flotta, per tre regole di dispatch.
+      Dieci semi per punto.</figcaption>
+  </figure>
+
+  <p>Entrambe le regole viste sopra indicizzano l'abbinamento sulla linea su cui si sono registrate
+    <em>tutte e due</em> le parti, quindi un passeggero la cui linea migliore non ha autisti resta non
+    servito anche quando un autista sulla sua seconda scelta lo avrebbe preso volentieri. La terza
+    regola abbandona la linea come chiave dell'abbinamento e la tiene solo come geometria: il
+    passeggero si registra ancora sulla sua prima scelta e comincia comunque a camminare verso quella,
+    ma smette di appartenerle. Qualunque autista può dirottarlo, a patto che il cammino che gli
+    resterebbe <em>comunque</em> da fare, da dove è arrivato in quel momento, stia dentro la soglia che
+    quel passeggero ha dichiarato. Il punteggio è un punteggio di coppia: la deviazione
+    dell'autista come frazione dell'andare dritto, più il cammino residuo del passeggero come frazione
+    del suo limite. Nessuna delle due parti legge l'unità di misura dell'altra, e nessuna delle due
+    soglie può essere scavalcata dal dispatcher.
+  </p>
+
+  <p><strong>È la prima regola qui a battere il ranking sul servizio con un segno stabile, e lo fa
+      solo in fondo all'asse della flotta</strong>: +0,075 con sei veicoli (sette semi su dieci in
+    positivo) e +0,053 con tredici (otto su dieci). Con trentadue la differenza è esattamente zero. Con
+    sessantasei e centotrentadue va nel verso opposto: −0,037 e −0,025, e <strong>nessun seme si
+      muove a suo favore</strong>. Il meccanismo spiega l'inversione: dove i veicoli scarseggiano la linea
+    scelta da un passeggero spesso non ha nessuno sopra, e liberarlo verso chiunque possa raggiungerlo
+    è un passaggio che altrimenti non avverrebbe; dove i veicoli abbondano c'è già un autista su ogni
+    linea, quindi dirottare i passeggeri li sposta soltanto.</p>
+
+  <p><strong>Sul costo non vince mai.</strong> La sua quota di distanza a vuoto è peggiore di quella
+    del ranking in tutti i semi in tre delle cinque dimensioni della flotta, e l'occupazione è
+    peggiore in tutti i semi in quattro, e con tredici veicoli percorre 8,6 km per passeggero contro
+    6,8. Mandare un autista a raccogliere qualcuno che stava camminando da un'altra parte è una
+    deviazione vera, e anche il secondo cammino del passeggero lo è. Contro la regola che insegue la
+    domanda, invece, domina: più servizio con tredici e trentadue veicoli (otto semi su dieci, e
+    sette), attese più brevi a ogni dimensione della flotta, e con trentadue lo fa percorrendo 25 km in
+    <em>meno</em>. Su questo corridoio, però, non inseguire la domanda resta più economico di
+    entrambe le regole.
+  </p>
+
+  <p class="figures">Due limiti, entrambi deliberati. Ogni autista decide da solo senza vedere il
+    resto della flotta, quindi due possono puntare allo stesso passeggero e il primo se lo prende.
+    Quanto costa è misurato: 10 contese perse in un'intera run con tredici autisti, ognuna delle quali
+    costa a chi perde un secondo prima di decidere di nuovo, quindi secondi e non passaggi. E un
+    passeggero viene dirottato al massimo una volta, e solo mentre sta ancora camminando: mandare
+    altrove chi è già fermo a una stazione azzererebbe l'orologio con cui si misura la sua pazienza e
+    gonfierebbe di nascosto ogni cifra di servizio di questa pagina.</p>
+
+  <h2>La dichiarazione anticipata compra l'attesa e vende il passaggio</h2>
+
+  <figure>
+    <img src="../../mas/images/declaration-service_rate.svg"
+      alt="Tasso di servizio rispetto alla quota di autisti e passeggeri che dichiarano in anticipo, da 0 a 100%. Scende da 0,85 a 0% a circa 0,7 con adozione parziale e risale solo a 0,75 al 100%.">
+    <figcaption>Tasso di servizio rispetto alla quota di autisti e passeggeri che dichiarano il
+      viaggio in anticipo, mossa sui due lati insieme. Tredici autisti e trentadue passeggeri, dieci
+      semi per punto.</figcaption>
+  </figure>
+
+  <p>Un passeggero che dichiara resta dov'è finché un autista con una finestra sovrapposta alla sua
+    non lo reclama, e solo allora cammina, verso la stazione di quell'autista. Quello che ottiene è
+    sapere quando partire invece di aspettare a una fermata sperando; quello che rischia è che la
+    chiamata non arrivi mai. Portando la quota di chi dichiara da nessuno a tutti, <strong>l'attesa
+      scende in modo monotono e il servizio non si riprende mai</strong>: l'attesa media va da 205 s a
+    17 s, dodici volte meno e in ogni seme, mentre il servizio scende da 0,853 a 0,753 con adozione
+    totale e ancora di più a ogni livello parziale, il peggiore al 75%. La distanza non si muove
+    affatto, da 180 a 183 km su tutto l'asse, quindi è la stessa guida riorganizzata e non un servizio
+    più economico.</p>
+
+  <p><strong>L'adozione parziale è peggiore di entrambi gli estremi.</strong> Un passeggero che
+    dichiara non sta in nessuna stazione, quindi solo un autista che dichiara può raggiungerlo: al 25%
+    di adozione otto passeggeri si contendono quattro autisti mentre ventiquattro se ne contendono
+    nove. Il mercato si spacca in due e la metà più piccola resta a corto di veicoli. Su questo
+    corridoio la dichiarazione anticipata è una leva sull'attesa, non sul tasso di servizio, e serve
+    un'adozione quasi totale prima che smetta di fare danni.</p>
+
+  <h2>La flotta a chiamata perde su ogni asse, e i suoi posti non valgono nulla</h2>
+
+  <figure>
+    <img src="../../mas/images/fleet-service_rate.svg"
+      alt="Tasso di servizio rispetto alla flotta per una flotta porta-a-porta con due posti e con quattro. Le due curve sono identiche.">
+    <figcaption>Una flotta porta-a-porta senza linee, tasso di servizio rispetto alla flotta, con due
+      posti e con quattro. Dieci semi per punto; le due curve sono sovrapposte.</figcaption>
+  </figure>
+
+  <p>Con gli stessi trentadue passeggeri, una flotta di robotaxi porta-a-porta ha bisogno di sedici
+    veicoli per arrivare a 0,894, paragonabile allo 0,853 di tredici autisti in carpooling, e percorre
+    <strong>2,2 volte la distanza per persona trasportata</strong> per farlo: 14,8 km per passeggero
+    contro 6,8, con più di metà dei chilometri a vuoto, un'occupazione di 0,46 contro 1,35 e
+    un'attesa media per la presa in carico di oltre dieci minuti. Il meccanismo è una sola differenza
+    strutturale: un veicolo di flotta <em>non ha un viaggio proprio</em>, quindi ogni chilometro a
+    vuoto è un costo che il servizio paga, mentre i chilometri a vuoto di un autista in carpooling
+    sono il pendolarismo di qualcuno. Aggiungere veicoli satura invece di correggere: trentadue ne
+    servono 0,897.</p>
+
+  <p><strong>Due posti e quattro danno risultati identici, in ogni seme e a ogni dimensione della
+      flotta.</strong> Il secondo posto non viene mai usato: i passeggeri sono sparsi e la flotta
+    raggruppa solo chi sta entro cinquanta metri da un altro, quindi su questo corridoio due
+    passeggeri non si trovano mai nello stesso posto nello stesso momento. Il risultato per cui i
+    posti battono i veicoli di un fattore cinque nel carpooling non vale esattamente nulla per una
+    flotta.</p>
+
+  <p class="figures">Un appunto, e tira nella stessa direzione della conclusione: ogni tratta
+    porta-a-porta è misurata in linea d'aria mentre le tratte di carpooling usano geometria stradale
+    reale, quindi la distanza della flotta è sottostimata e il divario vero è più ampio.</p>
+
+  <h2 id="rerun">I due studi precedenti, rieseguiti</h2>
+
+  <p>Questo lavoro nasce da due studi precedenti fatti con un simulatore Python: la mia tesi
+    magistrale sulla dichiarazione anticipata nel carpooling, sull'asse da Bourgoin-Jallieu a Lione, e
+    l'articolo a PFIA 2025 sulle reti strutturate per una flotta autonoma a chiamata nel Rodano.
+    Entrambi sono stati rieseguiti sul loro terreno, ricostruito da dati aperti (vicino alla domanda
+    pubblicata, non uguale). Ogni scenario è stato eseguito in tre modi, dieci semi ciascuno:
+    dal <strong>simulatore originale</strong> stesso, senza interfaccia e offline; da questo motore
+    <strong>come girava l'originale</strong>, con il suo tick, la sua velocità a piedi e i suoi bug
+    come interruttori; e da questo motore <strong>corretto</strong>. Due test di concordanza sono
+    stati fissati prima di guardare qualsiasi risultato: la media di questo motore come girava
+    l'originale dentro l'intervallo dei semi dell'originale, e ogni differenza tra scenari con lo
+    stesso segno in entrambi.</p>
+
+  <h3>Il risultato dello studio sulla flotta non sopravvive ai suoi bug</h3>
+
+  <p>La sua tesi era che una flotta su una rete strutturata di diciassette stazioni batte la stessa
+    flotta porta-a-porta: meno chilometri, veicoli più pieni, trasporto collettivo invece che taxi. Al
+    campione 100, dieci semi ciascuno:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th></th>
+          <th>Servizio</th>
+          <th>Occupazione</th>
+          <th>Km-veicolo</th>
+          <th>Attesa media</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Porta-a-porta, simulatore originale</th>
+          <td>0,906</td>
+          <td>0,878</td>
+          <td>45.839</td>
+          <td>252 s</td>
+        </tr>
+        <tr>
+          <th>Rete, simulatore originale</th>
+          <td><strong>0,442</strong></td>
+          <td>1,318</td>
+          <td>39.227</td>
+          <td>1.389 s</td>
+        </tr>
+        <tr>
+          <th>Porta-a-porta, corretto</th>
+          <td>0,999</td>
+          <td>0,843</td>
+          <td>48.471</td>
+          <td>235 s</td>
+        </tr>
+        <tr>
+          <th>Rete, corretto</th>
+          <td>0,954</td>
+          <td><strong>0,771</strong></td>
+          <td><strong>86.267</strong></td>
+          <td>967 s</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>La rete dell'originale percorre davvero meno chilometri con un'occupazione più alta, e serve
+    meno della metà dei suoi passeggeri. Tre difetti dell'originale producono quella forma, ognuno
+    misurato nelle sue run:</p>
+
+  <ul>
+    <li><strong>Il suo operatore di flotta perde assegnazioni.</strong> Un taxi a cui è stato
+      assegnato un passeggero resta libero per il resto della stessa decisione, quindi può riceverne un
+      altro e raccoglie solo l'ultimo; ogni passeggero assegnatogli prima si sente dire che un taxi sta
+      arrivando, non viene offerto a nessun altro, e rinuncia. Sono 2.872 assegnazioni perse per run
+      sulla rete, e i passeggeri che rinunciano sono chilometri non percorsi.</li>
+    <li><strong>I suoi taxi imbarcano passeggeri che non tolgono mai dallo stato di attesa</strong>,
+      560 per run sulla rete: viaggiano senza essere contati come passeggeri e contati come
+      occupazione.</li>
+    <li><strong>Il suo notebook di metriche conta come servito ogni passeggero che ha
+        rinunciato</strong>, confrontando un nome di stato che il simulatore non registra mai, quindi
+      la soddisfazione pubblicata di ogni scenario di flotta è 1,000 per costruzione.</li>
+  </ul>
+
+  <p>Corretta, <strong>la rete perde su ogni asse</strong>: 0,954 di servizio contro 0,999,
+    occupazione 0,771 contro 0,843 e il 78% di chilometri-veicolo in più, perché un passeggero che
+    cambia taxi a ogni stazione è un taxi che va fino a ogni stazione. Il campione 10 dice lo stesso
+    con otto volte la domanda: 541.558 chilometri-veicolo contro 298.536. È il risultato sulla flotta
+    del corridoio gallese, raggiunto dall'altra direzione: <strong>strutturare la rete non salva una
+      flotta a chiamata</strong>, e quello che sembrava salvarla era l'operatore che perdeva
+    passeggeri.</p>
+
+  <figure>
+    <img src="../../mas/images/lyon-100-occupancy.svg"
+      alt="Occupazione dei veicoli per quarto d'ora su una giornata per auto private, flotta porta-a-porta e flotta su rete, come le faceva girare l'originale.">
+    <figcaption>Occupazione per quarto d'ora, pesata per distanza, per i tre servizi al campione 100
+      come li faceva girare l'originale. Una run ciascuno a un solo seme: la forma di una giornata, non
+      un risultato su molte.</figcaption>
+  </figure>
+
+  <h3>Il risultato dello studio sul carpooling sopravvive, per una ragione che non conosceva</h3>
+
+  <p>Sulle 1.872 celle della griglia di dichiarazione anticipata, la media di questo motore cade
+    dentro l'intervallo dei semi dell'originale in 1.709 celle per il servizio e 1.780 per l'attesa.
+    Dove la differenza dell'originale tra dichiarazione totale e nessuna è più grande del suo rumore,
+    l'attesa si muove nello stesso verso in 43 celle su 46. Come girava l'originale, la dichiarazione
+    totale su entrambi i lati lascia l'attesa media dov'era, 506 s contro 508 s. È il risultato della
+    tesi: una strada solo con adozione totale, e nessuna separazione netta nemmeno lì.</p>
+
+  <p><strong>La ragione è che metà del meccanismo era spenta.</strong> Il passeggero che dichiara
+    avrebbe dovuto regolare la propria partenza sull'autista in arrivo e non l'ha mai fatto: i limiti
+    della sua finestra hanno un errore di segno, nessun autista ci rientra mai, e il passeggero parte
+    sempre all'ora dichiarata. Della dichiarazione anticipata ha girato solo il lato autista.
+    Corretta, con entrambi i lati che si regolano l'uno sull'altro, la dichiarazione totale riduce
+    l'attesa media da 507 s a <strong>382 s</strong>, un quarto. Anche la garanzia di partenza
+    configurata in ogni scenario della griglia non è mai stata messa nel mondo, quindi nessuna run
+    pubblicata ne aveva una.</p>
+
+  <p class="figures">Dove la riproduzione non arriva, dichiarato e non corretto a posteriori. Sulla
+    rete, come girava l'originale, questo motore serve 0,305 contro 0,416–0,464 dell'originale,
+    perché gli imbarchi sbagliati descritti sopra deliberatamente non sono riprodotti. I chilometri
+    restano circa il 7% sotto quelli dell'originale, che sparge le estremità dei viaggi su un quadrato
+    dove questo motore usa un disco dello stesso raggio. Sulla griglia del carpooling il servizio si
+    muove nello stesso verso solo in 25 celle separabili su 62, con i disaccordi dove i due motori
+    regolano diversamente un autista sul suo passeggero. L'originale non è stato eseguito al campione
+    10: un seme non era finito dopo 84 minuti, quindi le cifre del campione 10 qui sopra sono solo di
+    questo motore.</p>
+
+  <h2>Il dispatcher è una giunzione, e una delle implementazioni è un modello</h2>
+
+  <p><strong>Niente di quello che precede coinvolge un modello linguistico, e nessuna cifra da un
+      modello esiste ancora.</strong> Ogni numero di questa pagina è stato prodotto da una regola
+    fissa, offline, in modo deterministico. Quello che segue è un'affermazione ingegneristica su come
+    si misurerebbe un modello onestamente, non un risultato su un modello.</p>
+
+  <p>Il dispatcher sta dietro un trait con quattro decisioni: quale linea prende un autista, se
+    spendere un veicolo di garanzia su un passeggero che ha atteso troppo, quale veicolo libero
+    raccoglie quale passeggero, e dove aspetta un veicolo libero. Cinque implementazioni si innestano
+    sulla stessa giunzione: le tre regole fisse viste sopra, un modello su ogni decisione, e un
+    modello solo dove le prime due regole fisse sono in disaccordo. È la stessa giunzione che usano
+    le regole fisse, misurata sulle stesse colonne di mobilità, con il costo per decisione e il tasso
+    di azioni non valide riportati accanto.</p>
+
+  <p>Due elementi rendono economicamente sostenibili le implementazioni a modello, ed entrambi sono
+    misurati e non asseriti. Ogni decisione è guidata dagli eventi, quindi nulla costa una chiamata
+    per tick o per agente per tick; e ogni risposta è memoizzata sui byte esatti del suo contesto, il
+    che funziona solo perché nessun contesto porta l'orologio: una domanda che porta l'orologio è una
+    domanda diversa ogni secondo e non potrebbe mai essere riusata. Il risultato: <strong>3.913 decisioni in 44 chiamate</strong>,
+    o 2.239 in 22 per la variante che chiede solo sulle eccezioni. Quei conteggi sono misurati contro
+    uno stub che risponde con una regola, quindi misurano il meccanismo e non dicono
+    niente su un modello.</p>
+
+  <p>Il confronto richiede l'esecuzione di un solo comando, al costo di circa 11 dollari di token, e
+    le soglie che deve superare sono scritte <em>prima</em> della run e non dopo. Per la scelta della
+    linea è <strong>0,906 con tredici veicoli</strong>, cioè la valutazione delle coppie e non gli
+    0,853 della regola del ranking, perché l'asticella si è alzata quando è arrivata la terza regola;
+    e c'è una baseline di costo che non deve sforare. Per la progettazione della rete è
+    <strong>0,797 per valere qualcosa</strong>, la costruzione che legge la direzione della domanda, e
+    0,853 per eguagliare le sei linee a senso unico disegnate a mano, e non gli 0,750 di flow-ranked,
+    perché una vittoria contro l'avversario più debole non sarebbe un risultato. Riposizionare un
+    veicolo libero compete contro <em>non fare niente</em>, che è un'asticella bassa. Se vince la
+    regola fissa, è quello il numero che viene riportato.
+  </p>
+
+  <p>L'ordine di lavoro è questo: definire prima la metrica, costruire la baseline, aggiungere il
+    modello, misurare il delta, pubblicare il numero anche quando non fa una bella figura.
+    Un'azione non valida viene contata e rifiutata, mai ritentata, perché rifare la stessa domanda <em>è</em> il retry, e un ciclo di
+    retry nasconderebbe esattamente il numero che vale la pena avere. Un processo del modello che
+    muore fa fallire la run invece di finirla sotto una regola fissa con il nome del modello
+    addosso.</p>
+
+  <h2>Cosa non modella</h2>
+
+  <p>Nessuna risposta comportamentale all'incentivo: un compenso muove due colonne contabili e
+    nient'altro, ed è questo che mantiene validi tutti gli altri confronti tra schemi. Nessuna
+    assegnazione sull'intera flotta: la valutazione delle coppie è greedy per singolo autista, quindi
+    un passeggero conteso va all'autista che arriva prima e non alla coppia più economica. Le velocità
+    a piedi e alla guida sono estratte una volta per run e non per agente, perché la regola del
+    ranking ha bisogno che entrambe le parti valutino una linea allo stesso modo. I cammini verso le
+    stazioni e ogni tratta porta-a-porta usano un fallback in linea d'aria, che coglie il tempo e
+    sottostima la distanza.</p>
+
+  <p>Due cose che questo testo cerca di non fare. Un effetto che non si separa non è un effetto
+    escluso: dove dieci semi non riescono a distinguere due regole, è questo che viene riportato. E
+    una metrica da una run che ha toccato il limite dell'orologio non è un risultato; il motore conta
+    gli agenti rimasti in strada separatamente, così una run troncata non può essere mediata dentro
+    di nascosto, e nessuno sweep versionato sul corridoio ne ha una.</p>
+
+  <h2>Il motore</h2>
+
+  <p>Rust, un solo binario, nessun client HTTP e nessun runtime asincrono: l'unico comando che ha
+    bisogno di geometria stradale invoca <code>curl</code> e versiona il suo output, e il modello vive
+    dietro un sidecar Python che parla JSON riga per riga su una pipe. Gli agenti stanno in un vettore
+    piatto e si riferiscono l'uno all'altro per indice; decidere è una funzione pura che restituisce
+    un'influenza risolta da un passaggio successivo, ed è questo che ha reso il dispatcher
+    sostituibile senza toccare una macchina a stati. Un solo generatore con seme possiede ogni
+    estrazione, quindi una run sotto una regola fissa è una funzione pura del suo scenario e del suo
+    seme: lo stesso seme scrive output identici byte per byte, e così fa un grafico rigenerato. Ci
+    sono anche i comportamenti del simulatore precedente, ognuno dietro un interruttore spento di
+    default, ed è così che le riesecuzioni qui sopra hanno potuto farlo girare come girava senza
+    spostare un solo numero versionato sul corridoio.</p>
+
+  <p class="figures">Predecessore: un simulatore multi-agente in Python, la mia tesi magistrale e un
+    articolo a PFIA 2025 sulla strutturazione di rete per la mobilità autonoma a chiamata. Questa è
+    una riscrittura che pone la domanda sui costi a cui il lavoro precedente non poteva rispondere, e
+    <a href="#rerun">riesegue entrambi gli studi precedenti</a> sul loro terreno.</p>
+
+  <footer>
+    <p><a href="https://github.com/loryferli/mas">Repository</a> ·
+      <a href="https://github.com/loryferli/mas/blob/main/FINDINGS.md">FINDINGS.md</a>,
+      l'argomentazione completa con tutti i confronti appaiati ·
+      <a href="../">torna all'indice</a>
+    </p>
+  </footer>
+
+</body>
+
+</html>

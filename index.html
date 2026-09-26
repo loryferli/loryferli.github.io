@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lorenzo Ferlito</title>
+  <meta name="description"
+    content="Lorenzo Ferlito: AI engineer in Turin, Italy. Building AI-powered software for cybersecurity.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <a class="lang" href="it/" hreflang="it">Italiano</a>
+
+  <div class="banner">
+    <header>
+      <img class="avatar" src="images/profile.jpg" alt="Lorenzo Ferlito">
+      <div>
+        <h1>Lorenzo Ferlito</h1>
+        <p class="tagline">AI System Engineer · Turin, Italy</p>
+        <!-- CV button: re-enable when Ferlito_Lorenzo_CV.pdf lands
+        <p><a class="btn" href="Ferlito_Lorenzo_CV.pdf" download>Download CV (PDF)</a></p>
+        -->
+        <ul class="contact">
+          <li><a href="mailto:lorenzo.ferlito@outlook.it">lorenzo.ferlito@outlook.it</a></li>
+          <li><a href="https://linkedin.com/in/lorenzoferlito">LinkedIn</a></li>
+          <li><a href="https://github.com/loryferli">GitHub</a></li>
+        </ul>
+      </div>
+    </header>
+  </div>
+
+  <section class="intro">
+    <p>I build AI-powered software for cybersecurity at Drivesec. The job splits fairly evenly between writing code and
+      writing the functional and technical analyses that turn an idea into something a team can actually implement: I
+      like both halves, and I think the second one is what decides whether most projects succeed or fail.</p>
+    <p>Outside work I'm an avid reader: science fiction and crime novels fill my evenings. My interests range across
+      technology of every kind: from major engineering works to residential home-automation systems, from Formula 1
+      innovations to their practical applications, from the largest datacentres to the newest smartphone.</p>
+  </section>
+
+  <h2>Selected work</h2>
+
+  <div class="entry">
+    <h3><a href="mas/">Can a ridesharing service survive on a network with almost no traffic?</a></h3>
+    <p class="meta">Multi-agent simulator in Rust · 2026 · <a href="https://github.com/loryferli/mas">repository</a>
+    </p>
+    <p>A from-scratch rewrite of the thesis work below, on real geography, built to answer the cost
+      question the earlier version could not. The answer is yes, and the interesting part is what it
+      costs: thirteen enrolled drivers serve 85% of thirty-two riders at 6.8 vehicle-kilometres per
+      passenger carried, pushing the fleet to thirty-two vehicles gains another ten points of service
+      rate and costs 13.9, and pushing it to a hundred and thirty-two adds nothing and costs 58.7.
+      Seats are worth five times what vehicles are, the ceiling is walking distance rather than
+      matching, and six one-way lines drawn by hand beat every network derived automatically from the
+      same stations, because they know the direction of the demand. Two drivers an hour per station
+      is what a service needs and four is all it is worth, and the driver's dwell at the station is
+      what the service is made of: stop only on demand and it loses up to three fifths of its riders.
+      The same engine re-runs both studies below on their own ground. A language model plugs into the
+      same dispatcher seam the fixed rules use and is measured on the same columns, with cost per
+      decision beside them.</p>
+  </div>
+
+  <div class="entry">
+    <h3><a href="https://hal.science/hal-05189763v2">Véhicules autonomes : simulation multi-agents pour explorer
+        l'importance de la structuration de réseaux</a></h3>
+    <p class="meta">First author · PFIA 2025, Dijon, France · pp. 86–94 · July 2025</p>
+    <p>A multi-agent simulation of autonomous on-demand mobility, asking whether the network a service runs on should be
+      structured or left free-form. Structured wins, and not marginally: more efficient routes, fewer kilometres
+      driven, and a service that behaves more like collective transport than a fleet of taxis. The same structuring
+      works for carpooling in peri-urban areas: an on-demand service built around a few trunk lines, which we called
+      <em>Mobility as a Network</em>.</p>
+    <p class="aside">Re-run in 2026: the structured network's advantage came from the simulator's
+      operator losing assignments; corrected, the network loses on every axis.
+      <a href="mas/#rerun">The re-run</a>.</p>
+  </div>
+
+  <div class="entry">
+    <h3>Ridesharing: an analysis of performance in low-flow networks</h3>
+    <p class="meta">MSc thesis · Politecnico di Torino · 2025</p>
+    <p>Three different techniques aimed at one question: can a ridesharing service survive on a network carrying very
+      little traffic? The honest answer was no, or at least it was not possible to prove otherwise. None of the
+      behavioural levers I analysed moved the number of participants enough to turn an unstable network into a working
+      one. Anticipated departure declaration showed a path only under forced 100% adoption, and even there the
+      simulation data yielded no clear statistical separation between scenarios. What did come out were hard cost
+      figures for low-flow operation: enough to make a strategic decision with at company level, but not a solution.
+      Negative results are still results.</p>
+    <p class="aside">Re-run in 2026: the rider half of anticipated declaration never ran, because of
+      a sign error; with it, full declaration cuts the average wait by a quarter.
+      <a href="mas/#rerun">The re-run</a>.</p>
+  </div>
+
+  <h2>Experience</h2>
+
+  <ul class="roles">
+    <li><span class="what"><strong>AI Engineer</strong> · Drivesec S.r.l. · Turin, Italy</span><span class="when">Mar
+        2026 – present</span></li>
+    <li><span class="what"><strong>Functional Analyst</strong> (apprenticeship) · Sistemi S.p.A. · Collegno,
+        Italy</span><span class="when">Dec 2025 – Feb 2026</span></li>
+    <li><span class="what"><strong>Data Scientist</strong> (intern) · Ecov SAS · Lyon, France</span><span
+        class="when">Oct 2024 – Mar 2025</span></li>
+    <li><span class="what"><strong>Analytics Engineer</strong> (intern) · Biron SAS · Lyon, France</span><span
+        class="when">Apr 2024 – Sep 2024</span></li>
+  </ul>
+  <p class="aside">See <a href="https://linkedin.com/in/lorenzoferlito">LinkedIn</a> for more detail.
+  </p>
+
+  <h2>Education</h2>
+
+  <ul class="roles">
+    <li><span class="what"><strong>MSc Industrial Engineering</strong> · INSA Lyon, France</span><span class="when">2023
+        – 2025</span></li>
+    <li><span class="what"><strong>MSc Engineering and Management</strong> · Politecnico di Torino</span><span
+        class="when">2022 – 2025</span></li>
+    <li><span class="what"><strong>BSc Engineering and Management</strong> · Politecnico di Torino</span><span
+        class="when">2019 – 2022</span></li>
+    <li><span class="what"><strong>Erasmus exchange</strong> · Karlsruhe Institute of Technology, Germany</span><span
+        class="when">2022</span></li>
+  </ul>
+
+  <footer>
+    <p>Italian: native · English: bilingual · French: C1</p>
+  </footer>
+
+</body>
+
+</html>
